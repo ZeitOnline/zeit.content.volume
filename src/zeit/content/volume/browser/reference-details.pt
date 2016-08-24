@@ -1,0 +1,9 @@
+<div class="object-details type-volume" i18n:domain="zeit.cms">
+
+<div
+  class="inline-form"
+  tal:attributes="action string:${context/@@absolute_url}/@@edit.html"
+  tal:content="structure context/@@edit.html">
+</div>
+
+</div>

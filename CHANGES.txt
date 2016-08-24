@@ -2,10 +2,10 @@ zeit.content.volume changes
 ===========================
 
 
-1.0.1 (unreleased)
+1.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Allow to drag volume in article editor.  (ZON-3253)
 
 
 1.0.0 (2016-08-22)

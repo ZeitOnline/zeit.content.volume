@@ -50,4 +50,20 @@
      layer="zeit.cms.browser.interfaces.ICMSStyles"
      />
 
+  <browser:page
+    for="..interfaces.IVolumeTeaserTextReference"
+    name="object-details"
+    template="reference-details.pt"
+    layer="zeit.cms.browser.interfaces.ICMSLayer"
+    permission="zope.View"
+    />
+
+  <browser:page
+    for="..interfaces.IVolumeTeaserTextReference"
+    name="edit.html"
+    class=".form.EditReference"
+    layer="zeit.cms.browser.interfaces.ICMSLayer"
+    permission="zope.View"
+    />
+
 </configure>

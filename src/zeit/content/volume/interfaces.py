@@ -49,6 +49,14 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         'Convenience method to adapt to IVolumeCovers')
 
 
+class VolumeSource(zeit.cms.content.contentsource.CMSContentSource):
+
+    check_interfaces = (IVolume,)
+    name = 'volume'
+
+VOLUME_SOURCE = VolumeSource()
+
+
 class IVolumeCovers(zope.interface.common.mapping.IMapping):
     """Mapping from uniqueId to IImageGroup to save several covers on a volume.
 
@@ -72,3 +80,10 @@ class VolumeCoverSource(zeit.cms.content.sources.XMLSource):
 
 
 VOLUME_COVER_SOURCE = VolumeCoverSource()
+
+
+class IVolumeTeaserTextReference(zeit.cms.content.interfaces.IReference):
+
+    teaser_text = zope.schema.Text(
+        title=_('Teaser text'),
+        required=False)
