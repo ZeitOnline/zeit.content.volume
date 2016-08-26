@@ -80,20 +80,3 @@ class Edit(Base, zeit.cms.browser.form.EditForm):
 class Display(Base, zeit.cms.browser.form.DisplayForm):
 
     title = _('View volume')
-
-
-class EditReference(zeit.edit.browser.form.InlineForm):
-
-    legend = ''
-    undo_description = _('edit volume teaser text')
-
-    form_fields = zope.formlib.form.FormFields(
-        zeit.content.volume.interfaces.IVolumeTeaserTextReference,
-        # support read-only mode, see
-        # zeit.content.article.edit.browser.form.FormFields
-        render_context=zope.formlib.interfaces.DISPLAY_UNWRITEABLE).select(
-        'teaser_text')
-
-    @property
-    def prefix(self):
-        return 'reference-details-%s' % self.context.target.uniqueId

@@ -120,11 +120,15 @@ class VolumeCovers(
 
     def __getattr__(self, key):
         """Interfere with zope.formlib and retrieve content via getitem."""
-        return self.get(key)
+        if key in self.keys():
+            return self.get(key)
+        return super(VolumeCovers, self).__getattr__(key)
 
     def __setattr__(self, key, value):
         """Interfere with zope.formlib and store content via setitem."""
-        self[key] = value
+        if key in self.keys():
+            self[key] = value
+        return super(VolumeCovers, self).__setattr__(key, value)
 
 
 @grok.adapter(zeit.cms.content.interfaces.ICommonMetadata)
