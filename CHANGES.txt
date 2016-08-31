@@ -7,6 +7,9 @@ zeit.content.volume changes
 
 - Allow to drag volume in article editor.  (ZON-3253)
 
+- Make sure that the ``ICMSContent`` belongs to a print product before adapting
+  it to the associated ``Volume``.
+
 
 1.0.0 (2016-08-22)
 ------------------
