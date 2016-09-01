@@ -21,7 +21,7 @@ class EditReference(zeit.edit.browser.form.InlineForm):
         # support read-only mode, see
         # zeit.content.article.edit.browser.form.FormFields
         render_context=zope.formlib.interfaces.DISPLAY_UNWRITEABLE).select(
-        'teaser_text')
+        'teaserText')
 
     @property
     def prefix(self):

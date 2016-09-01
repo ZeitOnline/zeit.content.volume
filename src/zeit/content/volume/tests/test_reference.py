@@ -28,7 +28,7 @@ class VolumeReferenceTest(zeit.content.volume.testing.FunctionalTestCase):
             (self.volume, self.volume.xml),
             zeit.cms.content.interfaces.IReference, name='teaser_text')
 
-        result.teaser_text = 'Test teaser'
+        result.teaserText = 'Test teaser'
 
         self.assertEqual(True, IVolumeReference.providedBy(result))
-        self.assertEqual('Test teaser', result.xml.teaser_text.text)
+        self.assertEqual('Test teaser', result.xml.teaserText.text)

@@ -84,6 +84,7 @@ VOLUME_COVER_SOURCE = VolumeCoverSource()
 
 class IVolumeReference(zeit.cms.content.interfaces.IReference):
 
-    teaser_text = zope.schema.Text(
-        title=_('Teaser text'),
-        required=False)
+    teaserText = zope.schema.Text(
+        title=_("Teaser text"),
+        required=False,
+        max_length=170)

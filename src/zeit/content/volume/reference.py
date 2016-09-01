@@ -21,4 +21,4 @@ class VolumeReference(zeit.cms.content.reference.Reference):
     grok.provides(zeit.content.volume.interfaces.IVolumeReference)
     grok.name('teaser_text')
 
-    teaser_text = zeit.cms.content.property.ObjectPathProperty('.teaser_text')
+    teaserText = zeit.cms.content.property.ObjectPathProperty('.teaserText')
