@@ -51,7 +51,7 @@
      />
 
   <browser:page
-    for="..interfaces.IVolumeTeaserTextReference"
+    for="..interfaces.IVolumeReference"
     name="object-details-body"
     template="reference-details.pt"
     class=".reference.Display"
@@ -60,7 +60,7 @@
     />
 
   <browser:page
-    for="..interfaces.IVolumeTeaserTextReference"
+    for="..interfaces.IVolumeReference"
     name="edit.html"
     class=".reference.EditReference"
     layer="zeit.cms.browser.interfaces.ICMSLayer"
@@ -68,7 +68,7 @@
     />
 
   <browser:page
-    for="..interfaces.IVolumeTeaserTextReference"
+    for="..interfaces.IVolumeReference"
     layer="zeit.cms.browser.interfaces.ICMSLayer"
     name="object-details-heading"
     class=".reference.ReferenceDetailsHeading"

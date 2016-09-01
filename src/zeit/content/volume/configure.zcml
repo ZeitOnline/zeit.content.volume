@@ -29,12 +29,12 @@
       />
   </class>
 
-  <class class=".reference.VolumeTeaserTextReference">
+  <class class=".reference.VolumeReference">
     <require
-      interface=".interfaces.IVolumeTeaserTextReference"
+      interface=".interfaces.IVolumeReference"
       permission="zope.View" />
     <require
-      set_schema=".interfaces.IVolumeTeaserTextReference"
+      set_schema=".interfaces.IVolumeReference"
       permission="zeit.EditContent" />
   </class>
 
