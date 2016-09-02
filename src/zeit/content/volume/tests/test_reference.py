@@ -1,5 +1,4 @@
 import zeit.cms.content.interfaces
-import zeit.cms.repository.interfaces
 import zeit.content.volume.testing
 import zope.component
 
@@ -17,7 +16,7 @@ class VolumeReferenceTest(zeit.content.volume.testing.FunctionalTestCase):
         result = zope.component.getAdapter(
             self.volume,
             zeit.cms.content.interfaces.IXMLReference,
-            name="teaser_text")
+            name='related')
         self.assertEqual('volume', result.tag)
         self.assertEqual(self.volume.uniqueId, result.get('href'))
 
@@ -26,7 +25,7 @@ class VolumeReferenceTest(zeit.content.volume.testing.FunctionalTestCase):
 
         result = zope.component.getMultiAdapter(
             (self.volume, self.volume.xml),
-            zeit.cms.content.interfaces.IReference, name='teaser_text')
+            zeit.cms.content.interfaces.IReference, name='related')
 
         result.teaserText = 'Test teaser'
 
