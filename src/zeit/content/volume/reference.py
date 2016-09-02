@@ -6,7 +6,7 @@ import zeit.cms.content.reference
 import zeit.content.volume.interfaces
 
 
-@grok.adapter(zeit.content.volume.interfaces.IVolume, name='teaser_text')
+@grok.adapter(zeit.content.volume.interfaces.IVolume, name='related')
 @grok.implementer(zeit.cms.content.interfaces.IXMLReference)
 def XMLReference(context):
     node = lxml.objectify.E.volume(href=context.uniqueId)
@@ -16,9 +16,9 @@ def XMLReference(context):
 
 
 class VolumeReference(zeit.cms.content.reference.Reference):
-    """Teaser text for Volume in reference."""
+
     grok.implements(zeit.content.volume.interfaces.IVolumeReference)
     grok.provides(zeit.content.volume.interfaces.IVolumeReference)
-    grok.name('teaser_text')
+    grok.name('related')
 
     teaserText = zeit.cms.content.property.ObjectPathProperty('.teaserText')
