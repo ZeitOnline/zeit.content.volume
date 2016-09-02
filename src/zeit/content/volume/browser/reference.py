@@ -53,13 +53,18 @@ class Display(zeit.cms.browser.view.Base):
     def cover_image(self):
         height = 300
 
-        if not self.context.target.covers['printcover']:
+        if not self.context.target or not self.context.target.covers:
             return ''
+
+        cover_name = self.context.target.covers.keys()[0]
+        if not self.context.target.covers[cover_name]:
+            return ''
+
         repository = zope.component.getUtility(
             zeit.cms.repository.interfaces.IRepository)
         cover_url = '{}{}/@@raw'.format(
             self.url(repository),
-            self.context.target.covers['printcover'].variant_url(
+            self.context.target.covers[cover_name].variant_url(
                 'original', thumbnail=True)
         )
         return '<img src="{}" alt="" height="{}" border="0" />'.format(
