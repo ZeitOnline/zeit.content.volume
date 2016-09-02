@@ -1,3 +1,4 @@
+import gocept.lxml.interfaces
 import grokcore.component as grok
 import lxml.objectify
 import zeit.cms.content.interfaces
@@ -17,8 +18,11 @@ def XMLReference(context):
 
 class VolumeReference(zeit.cms.content.reference.Reference):
 
+    grok.adapts(
+        zeit.content.volume.interfaces.IVolume,
+        gocept.lxml.interfaces.IObjectified)
+    grok.provides(zeit.cms.content.interfaces.IReference)
     grok.implements(zeit.content.volume.interfaces.IVolumeReference)
-    grok.provides(zeit.content.volume.interfaces.IVolumeReference)
     grok.name('related')
 
     teaserText = zeit.cms.content.property.ObjectPathProperty('.teaserText')
