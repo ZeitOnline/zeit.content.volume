@@ -3,6 +3,7 @@ from zeit.content.volume.interfaces import VOLUME_FILENAME
 import gocept.form.grouped
 import transaction
 import zeit.cms.browser.form
+import zeit.cms.interfaces
 import zeit.cms.repository.folder
 import zeit.cms.repository.interfaces
 import zeit.cms.settings.interfaces
@@ -110,7 +111,7 @@ class Add(Base, zeit.cms.browser.form.AddForm):
     def volume_location(self, object):
         location = object.product.location.format(
             year=object.year, name=str(object.volume).rjust(2, '0'))
-        location = location.replace('http://xml.zeit.de/', '')
+        location = location.replace(zeit.cms.interfaces.ID_NAMESPACE, '')
         return [x for x in location.split('/') if x]
 
     def _check_duplicate_volume(self, location):
