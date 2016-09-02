@@ -20,7 +20,7 @@
 
   <class class=".volume.VolumeCovers">
     <require
-      interface="zope.interface.common.mapping.IReadMapping"
+      interface="zope.interface.common.mapping.IEnumerableMapping"
       permission="zope.View"
       />
     <require
