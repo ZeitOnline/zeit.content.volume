@@ -30,14 +30,8 @@ class EditReference(zeit.edit.browser.form.InlineForm):
 
 class ReferenceDetailsHeading(zeit.cms.browser.objectdetails.Details):
 
-    template = ViewPageTemplateFile(pkg_resources.resource_filename(
-        'zeit.cms.browser', 'object-details-heading.pt'))
-
     def __init__(self, context, request):
         super(ReferenceDetailsHeading, self).__init__(context.target, request)
-
-    def __call__(self):
-        return self.template()
 
 
 class Display(zeit.cms.browser.view.Base):
