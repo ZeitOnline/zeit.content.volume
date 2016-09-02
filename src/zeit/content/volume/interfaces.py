@@ -8,6 +8,9 @@ import zope.interface.common.mapping
 import zope.schema
 
 
+VOLUME_FILENAME = 'ausgabe'
+
+
 class ProductSource(zeit.cms.content.sources.ProductSource):
     """Filtered XML source that only includes products with `volume="true"`."""
 

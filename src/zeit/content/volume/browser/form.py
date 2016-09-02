@@ -1,12 +1,27 @@
 from zeit.cms.i18n import MessageFactory as _
+from zeit.content.volume.interfaces import VOLUME_FILENAME
 import gocept.form.grouped
+import transaction
 import zeit.cms.browser.form
+import zeit.cms.repository.folder
+import zeit.cms.repository.interfaces
 import zeit.cms.settings.interfaces
 import zeit.content.image.interfaces
 import zeit.content.volume.interfaces
 import zeit.content.volume.volume
+import zope.component
 import zope.formlib.form
+import zope.formlib.interfaces
+import zope.interface
 import zope.schema
+
+
+class DuplicateVolumeWarning(Exception):
+
+    zope.interface.implements(zope.formlib.interfaces.IWidgetInputError)
+
+    def doc(self):
+        return _(u'A volume with the given name already exists.')
 
 
 class Base(object):
@@ -70,6 +85,42 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             self.widgets['year'].setRenderedValue(settings.default_year)
         if not self.widgets['volume'].hasInput():
             self.widgets['volume'].setRenderedValue(settings.default_volume)
+
+    def add(self, object):
+        container = self.create_location(object)
+        if self._check_duplicate_volume(container):
+            return
+        container[VOLUME_FILENAME] = object
+        self._created_object = container[VOLUME_FILENAME]
+        self._finished_add = True
+
+    def create_location(self, object):
+        path = self.volume_location(object)
+        repository = zope.component.getUtility(
+            zeit.cms.repository.interfaces.IRepository)
+
+        folder = repository
+        for elem in path:
+            if folder.get(elem) is None:
+                folder[elem] = zeit.cms.repository.folder.Folder()
+            folder = folder[elem]
+
+        return folder
+
+    def volume_location(self, object):
+        location = object.product.location.format(
+            year=object.year, name=str(object.volume).rjust(2, '0'))
+        location = location.replace('http://xml.zeit.de/', '')
+        return [x for x in location.split('/') if x]
+
+    def _check_duplicate_volume(self, location):
+        if location.get(VOLUME_FILENAME) is not None:
+            transaction.doom()
+            self.errors = (DuplicateVolumeWarning(),)
+            self.status = _('There were errors')
+            self.form_reset = False
+            return True
+        return False
 
 
 class Edit(Base, zeit.cms.browser.form.EditForm):
