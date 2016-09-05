@@ -27,7 +27,7 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         b.getControl('Add').click()
         self.assertEqual(
             'http://localhost/++skin++vivi/repository/'
-            'ausgabe/2010/02/ausgabe/@@view.html', b.url)
+            '2010/02/ausgabe/@@view.html', b.url)
 
     def test_displays_dynamic_form_fields_for_imagegroup_references(self):
         self.open_add_form()
@@ -61,3 +61,21 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
             'http://localhost/++skin++vivi/repository/'
             '@@zeit.content.volume.Add', b.url)
         self.assertIn('volume with the given name already exists', b.contents)
+
+    def test_ICommonMetadata_can_be_adapted_to_added_volume(self):
+        from zeit.cms.testcontenttype.testcontenttype import TestContentType
+        b = self.browser
+        self.open_add_form()
+        b.getControl('Year').value = '2010'
+        b.getControl('Volume').value = '2'
+        b.getControl('Add').click()
+        content = TestContentType()
+        content.year = 2010
+        content.volume = 2
+        content.product = zeit.cms.content.sources.Product(u'ZEI')
+        with zeit.cms.testing.site(self.getRootFolder()):
+            self.repository['testcontent'] = content
+            volume = zeit.content.volume.interfaces.IVolume(content)
+        self.assertEqual(
+            u'http://xml.zeit.de/2010/02/ausgabe',
+            volume.uniqueId)

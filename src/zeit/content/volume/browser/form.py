@@ -1,5 +1,4 @@
 from zeit.cms.i18n import MessageFactory as _
-from zeit.content.volume.interfaces import VOLUME_FILENAME
 import gocept.form.grouped
 import transaction
 import zeit.cms.browser.form
@@ -88,15 +87,17 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             self.widgets['volume'].setRenderedValue(settings.default_volume)
 
     def add(self, object):
-        container = self.create_location(object)
-        if self._check_duplicate_volume(container):
+        path = self.volume_location(object)
+        # The last part of the path is the filename for the volume object.
+        volume_filename = path[-1]
+        container = self.create_location(path[:-1], object)
+        if self._check_duplicate_volume(container, volume_filename):
             return
-        container[VOLUME_FILENAME] = object
-        self._created_object = container[VOLUME_FILENAME]
+        container[volume_filename] = object
+        self._created_object = container[volume_filename]
         self._finished_add = True
 
-    def create_location(self, object):
-        path = self.volume_location(object)
+    def create_location(self, path, object):
         repository = zope.component.getUtility(
             zeit.cms.repository.interfaces.IRepository)
 
@@ -114,8 +115,8 @@ class Add(Base, zeit.cms.browser.form.AddForm):
         location = location.replace(zeit.cms.interfaces.ID_NAMESPACE, '')
         return [x for x in location.split('/') if x]
 
-    def _check_duplicate_volume(self, location):
-        if location.get(VOLUME_FILENAME) is not None:
+    def _check_duplicate_volume(self, location, name):
+        if location.get(name) is not None:
             transaction.doom()
             self.errors = (DuplicateVolumeWarning(),)
             self.status = _('There were errors')
