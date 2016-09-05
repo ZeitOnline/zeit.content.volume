@@ -8,10 +8,8 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
 
     def open_add_form(self):
         b = self.browser
-        b.open('http://localhost/++skin++vivi/repository')
-        menu = b.getControl(name='add_menu')
-        menu.displayValue = ['Volume']
-        b.open(menu.value[0])
+        b.open('http://localhost/++skin++vivi/repository/'
+               '@@zeit.content.volume.Add')
 
     def test_add_form_prefills_year_and_volume_from_global_settings(self):
         self.open_add_form()
