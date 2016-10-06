@@ -74,10 +74,6 @@ class Add(Base, zeit.cms.browser.form.AddForm):
     factory = zeit.content.volume.volume.Volume
     checkout = False
 
-    def suggestName(self, object):
-        """Define __name__ automatically."""
-        return str(object.volume).rjust(2, '0')
-
     def setUpWidgets(self, *args, **kw):
         super(Add, self).setUpWidgets(*args, **kw)
         settings = zeit.cms.settings.interfaces.IGlobalSettings(self.context)
