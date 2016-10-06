@@ -87,23 +87,22 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             self.widgets['volume'].setRenderedValue(settings.default_volume)
 
     def add(self, object):
-        path = self.volume_location(object)
-        # The last part of the path is the filename for the volume object.
-        volume_filename = path[-1]
-        container = zeit.cms.content.add.find_or_create_folder(*path[:-1])
-        if self._check_duplicate_volume(container, volume_filename):
+        path, filename = self._make_path(object, object.product.location)
+        container = zeit.cms.content.add.find_or_create_folder(*path)
+        if self._check_duplicate_item(container, filename):
             return
-        container[volume_filename] = object
-        self._created_object = container[volume_filename]
+        container[filename] = object
+        self._created_object = container[filename]
         self._finished_add = True
 
-    def volume_location(self, object):
-        location = object.fill_template(object.product.location)
-        location = location.replace(zeit.cms.interfaces.ID_NAMESPACE, '')
-        return [x for x in location.split('/') if x]
+    def _make_path(self, volume, text):
+        uniqueId = volume.fill_template(text)
+        uniqueId = uniqueId.replace(zeit.cms.interfaces.ID_NAMESPACE, '')
+        path = [x for x in uniqueId.split('/') if x]
+        return path[:-1], path[-1]
 
-    def _check_duplicate_volume(self, location, name):
-        if location.get(name) is not None:
+    def _check_duplicate_item(self, folder, name):
+        if name in folder:
             transaction.doom()
             self.errors = (DuplicateVolumeWarning(),)
             self.status = _('There were errors')
