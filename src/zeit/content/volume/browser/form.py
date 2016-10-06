@@ -83,13 +83,29 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             self.widgets['volume'].setRenderedValue(settings.default_volume)
 
     def add(self, object):
-        path, filename = self._make_path(object, object.product.location)
-        folder = zeit.cms.content.add.find_or_create_folder(*path)
-        if self._check_duplicate_item(folder, filename):
+        folder, filename = self._create_folder(object, object.product.location)
+        if folder is None:
             return
         folder[filename] = object
         self._created_object = folder[filename]
+
+        cp_template = zeit.cms.interfaces.ICMSContent(
+            object.product.cp_template, None)
+        if zeit.content.text.interfaces.IPythonScript.providedBy(cp_template):
+            folder, filename = self._create_folder(
+                object, object.product.centerpage)
+            if folder is None:
+                return
+            folder[filename] = cp_template(volume=object)
+
         self._finished_add = True
+
+    def _create_folder(self, volume, text):
+        path, filename = self._make_path(volume, text)
+        folder = zeit.cms.content.add.find_or_create_folder(*path)
+        if self._check_duplicate_item(folder, filename):
+            return (None, None)
+        return folder, filename
 
     def _make_path(self, volume, text):
         uniqueId = volume.fill_template(text)
