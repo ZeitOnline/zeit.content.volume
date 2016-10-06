@@ -88,11 +88,11 @@ class Add(Base, zeit.cms.browser.form.AddForm):
 
     def add(self, object):
         path, filename = self._make_path(object, object.product.location)
-        container = zeit.cms.content.add.find_or_create_folder(*path)
-        if self._check_duplicate_item(container, filename):
+        folder = zeit.cms.content.add.find_or_create_folder(*path)
+        if self._check_duplicate_item(folder, filename):
             return
-        container[filename] = object
-        self._created_object = container[filename]
+        folder[filename] = object
+        self._created_object = folder[filename]
         self._finished_add = True
 
     def _make_path(self, volume, text):
