@@ -82,21 +82,21 @@ class Add(Base, zeit.cms.browser.form.AddForm):
         if not self.widgets['volume'].hasInput():
             self.widgets['volume'].setRenderedValue(settings.default_volume)
 
-    def add(self, object):
-        folder, filename = self._create_folder(object, object.product.location)
+    def add(self, volume):
+        folder, filename = self._create_folder(volume, volume.product.location)
         if folder is None:
             return
-        folder[filename] = object
+        folder[filename] = volume
         self._created_object = folder[filename]
 
         cp_template = zeit.cms.interfaces.ICMSContent(
-            object.product.cp_template, None)
+            volume.product.cp_template, None)
         if zeit.content.text.interfaces.IPythonScript.providedBy(cp_template):
             folder, filename = self._create_folder(
-                object, object.product.centerpage)
+                volume, volume.product.centerpage)
             if folder is None:
                 return
-            folder[filename] = cp_template(volume=object)
+            folder[filename] = cp_template(volume=volume)
 
         self._finished_add = True
 
