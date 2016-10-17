@@ -100,15 +100,15 @@ class Add(Base, zeit.cms.browser.form.AddForm):
 
         self._finished_add = True
 
-    def _create_folder(self, volume, text):
-        path, filename = self._make_path(volume, text)
+    def _create_folder(self, volume, location_template):
+        path, filename = self._make_path(volume, location_template)
         folder = zeit.cms.content.add.find_or_create_folder(*path)
         if self._check_duplicate_item(folder, filename):
             return (None, None)
         return folder, filename
 
-    def _make_path(self, volume, text):
-        uniqueId = volume.fill_template(text)
+    def _make_path(self, volume, location_template):
+        uniqueId = volume.fill_template(location_template)
         uniqueId = uniqueId.replace(zeit.cms.interfaces.ID_NAMESPACE, '')
         path = [x for x in uniqueId.split('/') if x]
         return path[:-1], path[-1]
