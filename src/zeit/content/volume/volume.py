@@ -177,21 +177,17 @@ class VolumeCovers(
 @grok.adapter(zeit.cms.content.interfaces.ICommonMetadata)
 @grok.implementer(zeit.content.volume.interfaces.IVolume)
 def retrieve_volume_using_info_from_metadata(context):
+    unique_id = None
     if (context.year is None or context.volume is None or
-                context.product is None):
-        return None
+            context.product is None):
+        pass
     elif context.product.volume and context.product.location:
-        uniqueId = Volume._fill_template(context, context.product.location)
-        return zeit.cms.interfaces.ICMSContent(uniqueId, None)
+        unique_id = Volume._fill_template(context, context.product.location)
     else:
-        for product in zeit.content.volume.interfaces.PRODUCT_SOURCE:
+        for product in zeit.content.volume.interfaces.PRODUCT_SOURCE(None):
             if context.product in product.dependent_products:
-                uniqueId = Volume._fill_template(context,
-                                                 context.product.location)
-                return zeit.cms.interfaces.ICMSContent(uniqueId, None)
-        return None
-
-
+                unique_id = Volume._fill_template(context, product.location)
+    return zeit.cms.interfaces.ICMSContent(unique_id, None)
 
 
 @grok.adapter(zeit.content.volume.interfaces.IVolume)
@@ -199,8 +195,8 @@ def retrieve_volume_using_info_from_metadata(context):
 def retrieve_corresponding_centerpage(context):
     if context.product is None or context.product.centerpage is None:
         return None
-    uniqueId = context.fill_template(context.product.centerpage)
-    cp = zeit.cms.interfaces.ICMSContent(uniqueId, None)
+    unique_id = context.fill_template(context.product.centerpage)
+    cp = zeit.cms.interfaces.ICMSContent(unique_id, None)
     if not zeit.content.cp.interfaces.ICenterPage.providedBy(cp):
         return None
     return cp
