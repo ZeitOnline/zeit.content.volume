@@ -1,4 +1,5 @@
 # coding: utf8
+from collections import defaultdict
 from zeit.cms.i18n import MessageFactory as _
 import zc.sourcefactory.source
 import zeit.cms.content.interfaces
@@ -9,11 +10,26 @@ import zope.schema
 
 
 class ProductSource(zeit.cms.content.sources.ProductSource):
-    """Filtered XML source that only includes products with `volume="true"`."""
+    """
+    Filtered XML source that only includes products with `volume="true"`.
+    Every product also has dependent Products which are defined in the
+    product.xml.
+    """
 
     def getValues(self, context):
         values = super(ProductSource, self).getValues(context)
-        return [x for x in values if x.volume]
+        products = []
+        dependent_products = defaultdict(list)
+        for value in values:
+            if value.volume:
+                products.append(value)
+            if value.relates_to:
+                dependent_products[value.relates_to] += [value]
+        for product in products:
+            product.dependent_products = dependent_products.get(product.id)
+        return products
+
+PRODUCT_SOURCE = ProductSource()
 
 
 class IVolume(zeit.cms.content.interfaces.IXMLContent):
@@ -24,7 +40,7 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         # file. We only need to set an ID here, since to read the product we'll
         # ask the source anyway.
         default=zeit.cms.content.sources.Product(u'ZEI'),
-        source=ProductSource())
+        source=PRODUCT_SOURCE)
 
     year = zope.schema.Int(
         title=_("Year"),
