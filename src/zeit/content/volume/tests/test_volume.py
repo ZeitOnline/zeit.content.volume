@@ -23,30 +23,33 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
         super(TestVolumeCovers, self).setUp()
         self.repository['imagegroup'] = create_image_group()
         self.volume = Volume()
+        self.volume.product = zeit.cms.content.sources.Product(u'ZEI')
 
     def test_setattr_stores_uniqueId_in_XML_of_Volume(self):
-        self.volume.covers['ipad'] = self.repository['imagegroup']
+        self.volume.set_cover('ipad', 'ZEI', self.repository['imagegroup'])
         self.assertEqual(
             '<covers xmlns:py="http://codespeak.net/lxml/objectify/pytype">'
-            '<cover href="http://xml.zeit.de/imagegroup/" id="ipad"/>'
+            '<cover href="http://xml.zeit.de/imagegroup/" id="ipad" '
+            'product_id="ZEI"/>'
             '</covers>',
             lxml.etree.tostring(self.volume.xml.covers))
 
     def test_setattr_deletes_existing_node_if_value_is_None(self):
-        self.volume.covers['ipad'] = self.repository['imagegroup']
-        self.volume.covers['ipad'] = None
+        self.volume.set_cover('ipad', 'ZEI', self.repository['imagegroup'])
+        self.volume.set_cover('ipad', 'ZEI', None)
         self.assertEqual(
             '<covers xmlns:py="http://codespeak.net/lxml/objectify/pytype"/>',
             lxml.etree.tostring(self.volume.xml.covers))
 
     def test_getattr_retrieves_ICMSContent_via_uniqueId_in_XML_of_Volume(self):
         node = lxml.objectify.E.cover(
-            href='http://xml.zeit.de/imagegroup/', id='ipad')
+            href='http://xml.zeit.de/imagegroup/', id='ipad', product_id='ZEI')
         lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
         self.volume.xml.covers.append(node)
 
         self.assertEqual(
-            self.repository['imagegroup'], self.volume.covers['ipad'])
+            self.repository['imagegroup'], self.volume.get_cover('ipad',
+                                                                 'ZEI'))
 
 
 class TestReference(zeit.content.volume.testing.FunctionalTestCase):

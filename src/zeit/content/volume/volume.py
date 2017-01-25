@@ -52,9 +52,9 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             return
         self._product_id = value.id if value is not None else None
 
-    @property
-    def covers(self):
-        return zeit.content.volume.interfaces.IVolumeCovers(self)
+    # @property
+    # def covers(self):
+    #     return zeit.content.volume.interfaces.IVolumeCovers(self)
 
     def fill_template(self, text):
         return self._fill_template(self, text)
@@ -94,6 +94,43 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         return zeit.cms.interfaces.ICMSContent(
             iter(result).next()['uniqueId'], None)
 
+    def get_cover(self, cover_id, product_id=None):
+        if not product_id:
+            product_id = self.product.id
+        # Use fallback if no result?
+        # Then I could just delete if statement above
+        path = '//covers/cover[@id="{}" and @product_id="{}"]' \
+            .format(cover_id, product_id)
+        node = self.xml.xpath(path)
+        uniqueId = node[0].get('href') if node else None
+        return zeit.cms.interfaces.ICMSContent(uniqueId, None)
+
+    def set_cover(self, cover_id, product_id, imagegroup):
+        # Check if this cover is defined in VolumeCoverSource and
+        # product_id in VolumeSource and set it in xml
+        if self._is_valid_cover_id_and_product_id(cover_id, product_id):
+            path = '//covers/cover[@id="{}" and @product_id="{}"]' \
+                .format(cover_id, product_id)
+            node = self.xml.xpath(path)
+            if node:
+                self.xml.covers.remove(node[0])
+            if imagegroup:
+                node = lxml.objectify.E.cover(id=cover_id,
+                                              product_id=product_id,
+                                              href=imagegroup.uniqueId)
+                lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
+                self.xml.covers.append(node)
+            # Is it neccassary or does the persistent module keep track of this
+            # stuff?
+            super(Volume, self).__setattr__('_p_changed', True)
+
+    def _is_valid_cover_id_and_product_id(self, cover_id, product_id):
+        cover_ids = list(zeit.content.volume.interfaces.VOLUME_COVER_SOURCE(
+            self))
+        product_ids = [self.product.id] + [val.id for val in
+                                           self.product.dependent_products]
+        return cover_id in cover_ids and product_id in product_ids
+
 
 class VolumeType(zeit.cms.type.XMLContentTypeDeclaration):
 
@@ -103,7 +140,8 @@ class VolumeType(zeit.cms.type.XMLContentTypeDeclaration):
     type = 'volume'
 
 
-# XXX copied & adjusted from `zeit.content.author.author.BiographyQuestions`
+# XXX copied & adjusted from `zeit.content.author.author.BiographyQuestions
+#  Can be deleted with the new Implmentation`
 class VolumeCovers(
         grok.Adapter,
         UserDict.DictMixin,

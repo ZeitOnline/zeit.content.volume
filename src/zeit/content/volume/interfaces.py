@@ -61,8 +61,8 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         title=_('Date of digital publication'),
         required=False)
 
-    covers = zope.interface.Attribute(
-        'Convenience method to adapt to IVolumeCovers')
+    # covers = zope.interface.Attribute(
+    #     'Convenience method to adapt to IVolumeCovers')
 
     previous = zope.interface.Attribute(
         'The previous IVolume object (by date_digital_published) or None')
@@ -74,6 +74,14 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         """Fill in a string template with the placeholders year=self.year
         and name=self.volume (zero-padded to two digits), e.g.
         ``http://xml.zeit.de/{year}/{name}/ausgabe``.
+        """
+
+    def get_cover(cover_id, product_id):
+        """
+        Get a cover of product.
+        For example volume.get_cover('printcover','ZEI') returns the
+        printcover of DIE ZEIT of this specific volume.
+        :return: zeit.content.image.interfaces.IImageGroup or None
         """
 
 
