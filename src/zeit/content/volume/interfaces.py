@@ -26,7 +26,7 @@ class ProductSource(zeit.cms.content.sources.ProductSource):
             if value.relates_to:
                 dependent_products[value.relates_to] += [value]
         for product in products:
-            product.dependent_products = dependent_products.get(product.id)
+            product.dependent_products = dependent_products[product.id]
         return products
 
 PRODUCT_SOURCE = ProductSource()

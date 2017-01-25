@@ -126,7 +126,8 @@ class TestVolume(zeit.content.volume.testing.FunctionalTestCase):
         self.repository['2015']['01']['ausgabe'] = volume
 
     def test_looks_up_centerpage_from_product_setting(self):
-        self.repository['2015']['01']['index'] = zeit.content.cp.centerpage.CenterPage()
+        self.repository['2015']['01']['index'] = zeit.content.cp.centerpage\
+            .CenterPage()
         volume = zeit.cms.interfaces.ICMSContent(
             'http://xml.zeit.de/2015/01/ausgabe')
         cp = zeit.content.cp.interfaces.ICenterPage(volume)
