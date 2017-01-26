@@ -76,13 +76,23 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         ``http://xml.zeit.de/{year}/{name}/ausgabe``.
         """
 
+    # Maybe its nicer use the product, instead of product id?
     def get_cover(cover_id, product_id):
         """
         Get a cover of product.
         For example volume.get_cover('printcover','ZEI') returns the
         printcover of DIE ZEIT of this specific volume.
+        If no product_id is given or if no Cover is found, the method looks
+        for a cover of the main_product.
         :return: zeit.content.image.interfaces.IImageGroup or None
         """
+
+    def set_cover(cover_id, product_id, image):
+        """
+        Set an image as a cover of product.
+        """
+
+
 
 
 class VolumeSource(zeit.cms.content.contentsource.CMSContentSource):

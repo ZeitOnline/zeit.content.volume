@@ -95,19 +95,20 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             iter(result).next()['uniqueId'], None)
 
     def get_cover(self, cover_id, product_id=None):
-        if not product_id:
-            product_id = self.product.id
-        # Use fallback if no result?
-        # Then I could just delete if statement above
         path = '//covers/cover[@id="{}" and @product_id="{}"]' \
             .format(cover_id, product_id)
         node = self.xml.xpath(path)
         uniqueId = node[0].get('href') if node else None
-        return zeit.cms.interfaces.ICMSContent(uniqueId, None)
+        if uniqueId:
+            return zeit.cms.interfaces.ICMSContent(uniqueId, None)
+        # Fallback: try to find product for main product
+        # Save recursion :)
+        elif product_id is not self.product.id:
+            return self.get_cover(cover_id, self.product.id)
 
     def set_cover(self, cover_id, product_id, imagegroup):
         # Check if this cover is defined in VolumeCoverSource and
-        # product_id in VolumeSource and set it in xml
+        # product is part of this volume and set it in xml
         if self._is_valid_cover_id_and_product_id(cover_id, product_id):
             path = '//covers/cover[@id="{}" and @product_id="{}"]' \
                 .format(cover_id, product_id)
@@ -141,7 +142,7 @@ class VolumeType(zeit.cms.type.XMLContentTypeDeclaration):
 
 
 # XXX copied & adjusted from `zeit.content.author.author.BiographyQuestions
-#  Can be deleted with the new Implmentation`
+#  Can be deleted with the new Implmentation
 class VolumeCovers(
         grok.Adapter,
         UserDict.DictMixin,

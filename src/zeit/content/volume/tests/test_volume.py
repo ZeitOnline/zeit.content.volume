@@ -25,7 +25,14 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
         self.volume = Volume()
         self.volume.product = zeit.cms.content.sources.Product(u'ZEI')
 
-    def test_setattr_stores_uniqueId_in_XML_of_Volume(self):
+    def add_ipad_zeit_cover_to_volume(self):
+        node = lxml.objectify.E.cover(
+            href='http://xml.zeit.de/imagegroup/', id='ipad', product_id='ZEI')
+        lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
+        self.volume.xml.covers.append(node)
+
+
+    def test_set_cover_stores_uniqueId_in_XML_of_Volume(self):
         self.volume.set_cover('ipad', 'ZEI', self.repository['imagegroup'])
         self.assertEqual(
             '<covers xmlns:py="http://codespeak.net/lxml/objectify/pytype">'
@@ -34,22 +41,39 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
             '</covers>',
             lxml.etree.tostring(self.volume.xml.covers))
 
-    def test_setattr_deletes_existing_node_if_value_is_None(self):
+    def test_set_cover_deletes_existing_node_if_value_is_None(self):
         self.volume.set_cover('ipad', 'ZEI', self.repository['imagegroup'])
         self.volume.set_cover('ipad', 'ZEI', None)
         self.assertEqual(
             '<covers xmlns:py="http://codespeak.net/lxml/objectify/pytype"/>',
             lxml.etree.tostring(self.volume.xml.covers))
 
-    def test_getattr_retrieves_ICMSContent_via_uniqueId_in_XML_of_Volume(self):
-        node = lxml.objectify.E.cover(
-            href='http://xml.zeit.de/imagegroup/', id='ipad', product_id='ZEI')
-        lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
-        self.volume.xml.covers.append(node)
-
+    def test_get_cover_retrieves_ICMSContent_via_uniqueId_and_product_of_Volume(self):
+        self.add_ipad_zeit_cover_to_volume()
         self.assertEqual(
             self.repository['imagegroup'], self.volume.get_cover('ipad',
                                                                  'ZEI'))
+
+    def test_get_cover_retrieves_zei_cover_of_Volume_if_only_cover_is_given(
+            self):
+        self.add_ipad_zeit_cover_to_volume()
+        self.assertEqual(
+            self.repository['imagegroup'], self.volume.get_cover('ipad'))
+
+    # Well thats something worth discussing.
+    # Intuitively there shouldn't be a fallback for products which cant be
+    # part of this volume
+    # def test_get_cover_retrieves_none_for_if_product_is_not_in_volume(
+    #         self):
+    #     self.add_ipad_zeit_cover_to_volume()
+    #     self.assertEqual(None, self.volume.get_cover('ipad', 'TEST'))
+
+    def test_get_cover_retrieves_zei_cover_of_Volume_if_dependent_product_is_given(
+            self):
+        self.add_ipad_zeit_cover_to_volume()
+        self.assertEqual(
+            self.repository['imagegroup'], self.volume.get_cover('ipad',
+                                                                 'ZMLB'))
 
 
 class TestReference(zeit.content.volume.testing.FunctionalTestCase):
