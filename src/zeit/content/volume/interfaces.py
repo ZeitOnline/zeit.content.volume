@@ -18,16 +18,7 @@ class ProductSource(zeit.cms.content.sources.ProductSource):
 
     def getValues(self, context):
         values = super(ProductSource, self).getValues(context)
-        products = []
-        dependent_products = defaultdict(list)
-        for value in values:
-            if value.volume:
-                products.append(value)
-            if value.relates_to:
-                dependent_products[value.relates_to] += [value]
-        for product in products:
-            product.dependent_products = dependent_products[product.id]
-        return products
+        return [value for value in values if value.volume]
 
 PRODUCT_SOURCE = ProductSource()
 
