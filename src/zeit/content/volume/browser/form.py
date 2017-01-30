@@ -87,6 +87,13 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             return
         folder[filename] = volume
 
+        # XXX copy&paste from superclass
+        manager = zeit.cms.checkout.interfaces.ICheckoutManager(
+            folder[filename], None)
+        if manager is not None and manager.canCheckout:
+            self._created_object = manager.checkout()
+            self._checked_out = True
+
         cp_template = zeit.cms.interfaces.ICMSContent(
             volume.product.cp_template, None)
         if zeit.content.text.interfaces.IPythonScript.providedBy(cp_template):
@@ -95,13 +102,6 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             if folder is None:
                 return
             folder[filename] = cp_template(volume=volume)
-
-        # XXX copy&paste from superclass
-        manager = zeit.cms.checkout.interfaces.ICheckoutManager(
-            folder[filename], None)
-        if manager is not None and manager.canCheckout:
-            self._created_object = manager.checkout()
-            self._checked_out = True
 
         self._finished_add = True
 
