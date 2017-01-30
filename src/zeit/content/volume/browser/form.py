@@ -65,9 +65,7 @@ class Base(object):
                     self.form_fields += zope.formlib.form.FormFields(field)
                     fieldnames.append(field.__name__)
                 self.field_groups += (gocept.form.grouped.Fields(
-                    _('Covers ${product}',
-                      mapping=dict(product=product.title)),
-                    fieldnames, css_class='column-right'),)
+                    product.title, fieldnames, css_class='column-right'),)
 
 
 class Add(Base, zeit.cms.browser.form.AddForm):
