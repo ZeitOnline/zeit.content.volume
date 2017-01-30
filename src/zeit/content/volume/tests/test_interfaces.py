@@ -7,5 +7,5 @@ class TestProductSource(zeit.content.volume.testing.FunctionalTestCase):
         from zeit.content.volume.interfaces import ProductSource
         source = ProductSource()
         values = list(source(None))
-        self.assertEqual(1, len(values))
+        self.assertEqual(2, len(values))
         self.assertEqual('Die Zeit', values[0].title)
