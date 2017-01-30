@@ -54,6 +54,12 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
     next = zope.interface.Attribute(
         'The next IVolume object (by date_digital_published) or None')
 
+    def get_cover(name, product_id=None):
+        pass
+
+    def set_cover(name, product_id, value):
+        pass
+
     def fill_template(text):
         """Fill in a string template with the placeholders year=self.year
         and name=self.volume (zero-padded to two digits), e.g.

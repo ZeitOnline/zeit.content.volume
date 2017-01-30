@@ -94,6 +94,13 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         return zeit.cms.interfaces.ICMSContent(
             iter(result).next()['uniqueId'], None)
 
+    # TODO These are just stubs, need the actual IVolumeCovers replacement here
+    def get_cover(self, name, product_id=None):
+        return self.covers[name]
+
+    def set_cover(self, name, product_id, value):
+        self.covers[name] = value
+
 
 class VolumeType(zeit.cms.type.XMLContentTypeDeclaration):
 

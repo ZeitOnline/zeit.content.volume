@@ -1,15 +1,13 @@
 from zeit.cms.i18n import MessageFactory as _
 import gocept.form.grouped
+import grokcore.component as grok
 import transaction
 import zeit.cms.browser.form
 import zeit.cms.interfaces
-import zeit.cms.repository.folder
-import zeit.cms.repository.interfaces
 import zeit.cms.settings.interfaces
 import zeit.content.image.interfaces
 import zeit.content.volume.interfaces
 import zeit.content.volume.volume
-import zope.component
 import zope.formlib.form
 import zope.formlib.interfaces
 import zope.interface
@@ -37,9 +35,6 @@ class Base(object):
             ('product', 'year', 'volume',
              'date_digital_published', 'teaserText'),
             css_class='column-left'),
-        gocept.form.grouped.RemainingFields(
-            _('Texts'),
-            css_class='column-right'),
     )
 
     def __init__(self, context, request):
@@ -54,25 +49,31 @@ class Base(object):
 
         """
         super(Base, self).__init__(context, request)
-        source = zeit.content.volume.interfaces.VOLUME_COVER_SOURCE(
+        covers = zeit.content.volume.interfaces.VOLUME_COVER_SOURCE(
             self.context)
-        for name in source:
-            field = zope.schema.Choice(
-                title=source.title(name), required=False,
-                source=zeit.content.image.interfaces.imageGroupSource)
-            field.__name__ = name
-            field.interface = zeit.content.volume.interfaces.IVolumeCovers
-            self.form_fields += zope.formlib.form.FormFields(field)
-
-        self.field_groups += (gocept.form.grouped.Fields(
-            _('Covers'), tuple(source), css_class='column-right'),)
+        if getattr(self.context, 'product', None) is not None:
+            for product in (
+                    [self.context.product] +
+                    self.context.product.dependent_products):
+                fieldnames = []
+                for name in covers:
+                    field = zope.schema.Choice(
+                        title=covers.title(name), required=False,
+                        source=zeit.content.image.interfaces.imageGroupSource)
+                    field.__name__ = 'cover_%s_%s' % (product.id, name)
+                    field.interface = ICovers
+                    self.form_fields += zope.formlib.form.FormFields(field)
+                    fieldnames.append(field.__name__)
+                self.field_groups += (gocept.form.grouped.Fields(
+                    _('Covers ${product}',
+                      mapping=dict(product=product.title)),
+                    fieldnames, css_class='column-right'),)
 
 
 class Add(Base, zeit.cms.browser.form.AddForm):
 
     title = _('Add volume')
     factory = zeit.content.volume.volume.Volume
-    checkout = False
 
     def setUpWidgets(self, *args, **kw):
         super(Add, self).setUpWidgets(*args, **kw)
@@ -87,7 +88,6 @@ class Add(Base, zeit.cms.browser.form.AddForm):
         if folder is None:
             return
         folder[filename] = volume
-        self._created_object = folder[filename]
 
         cp_template = zeit.cms.interfaces.ICMSContent(
             volume.product.cp_template, None)
@@ -97,6 +97,13 @@ class Add(Base, zeit.cms.browser.form.AddForm):
             if folder is None:
                 return
             folder[filename] = cp_template(volume=volume)
+
+        # XXX copy&paste from superclass
+        manager = zeit.cms.checkout.interfaces.ICheckoutManager(
+            folder[filename], None)
+        if manager is not None and manager.canCheckout:
+            self._created_object = manager.checkout()
+            self._checked_out = True
 
         self._finished_add = True
 
@@ -131,3 +138,27 @@ class Edit(Base, zeit.cms.browser.form.EditForm):
 class Display(Base, zeit.cms.browser.form.DisplayForm):
 
     title = _('View volume')
+
+
+class ICovers(zope.interface.Interface):
+    pass
+
+
+class Covers(grok.Adapter):
+
+    grok.context(zeit.content.volume.interfaces.IVolume)
+    grok.implements(ICovers)
+
+    def __getattr__(self, name):
+        if not name.startswith('cover_'):
+            return super(Covers, self).__getattr__(name)
+        name = name.replace('cover_', '', 1)
+        product, cover = name.split('_')
+        return self.context.get_cover(cover, product)
+
+    def __setattr__(self, name, value):
+        if not name.startswith('cover_'):
+            return super(Covers, self).__setattr__(name, value)
+        name = name.replace('cover_', '', 1)
+        product, cover = name.split('_')
+        self.context.set_cover(cover, product, value)
