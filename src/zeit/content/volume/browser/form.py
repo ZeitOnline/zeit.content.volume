@@ -61,7 +61,7 @@ class Base(object):
                         title=covers.title(name), required=False,
                         source=zeit.content.image.interfaces.imageGroupSource)
                     field.__name__ = 'cover_%s_%s' % (product.id, name)
-                    field.interface = ICovers
+                    field.interface = zeit.content.volume.interfaces.ICovers
                     self.form_fields += zope.formlib.form.FormFields(field)
                     fieldnames.append(field.__name__)
                 self.field_groups += (gocept.form.grouped.Fields(
@@ -138,14 +138,10 @@ class Display(Base, zeit.cms.browser.form.DisplayForm):
     title = _('View volume')
 
 
-class ICovers(zope.interface.Interface):
-    pass
-
-
 class Covers(grok.Adapter):
 
     grok.context(zeit.content.volume.interfaces.IVolume)
-    grok.implements(ICovers)
+    grok.implements(zeit.content.volume.interfaces.ICovers)
 
     def __getattr__(self, name):
         if not name.startswith('cover_'):

@@ -9,20 +9,6 @@ import zope.interface.common.mapping
 import zope.schema
 
 
-class ProductSource(zeit.cms.content.sources.ProductSource):
-    """
-    Filtered XML source that only includes products with `volume="true"`.
-    Every product also has dependent Products which are defined in the
-    product.xml.
-    """
-
-    def getValues(self, context):
-        values = super(ProductSource, self).getValues(context)
-        return [value for value in values if value.volume]
-
-PRODUCT_SOURCE = ProductSource()
-
-
 class IVolume(zeit.cms.content.interfaces.IXMLContent):
 
     product = zope.schema.Choice(
@@ -90,6 +76,41 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         """
 
 
+class ICovers(zope.interface.Interface):
+    """
+    This interface is used to define the available covers via an Cover XML
+    source for all Products to store the chosen cover images as references
+    on the IVolume.
+    """
+
+
+class IVolumeReference(zeit.cms.content.interfaces.IReference):
+
+    teaserText = zope.schema.Text(
+        title=_("Teaser text"),
+        required=False,
+        max_length=170)
+
+
+class ITocConnector(zope.interface.Interface):
+    """
+    Marker Interface for a the Connector to get the Tocdata from
+    /cms/wf-archiv/archiv
+    """
+
+
+class ProductSource(zeit.cms.content.sources.ProductSource):
+    """
+    Filtered XML source that only includes products with `volume="true"`.
+    Every product also has dependent Products which are defined in the
+    product.xml.
+    """
+
+    def getValues(self, context):
+        values = super(ProductSource, self).getValues(context)
+        return [value for value in values if value.volume]
+
+PRODUCT_SOURCE = ProductSource()
 
 
 class VolumeSource(zeit.cms.content.contentsource.CMSContentSource):
@@ -98,15 +119,6 @@ class VolumeSource(zeit.cms.content.contentsource.CMSContentSource):
     name = 'volume'
 
 VOLUME_SOURCE = VolumeSource()
-
-
-class IVolumeCovers(zope.interface.common.mapping.IMapping):
-    """Mapping from uniqueId to IImageGroup to save several covers on a volume.
-
-    This interface is used to define the available covers via an XML source and
-    to store the chosen cover images as references on the IVolume.
-
-    """
 
 
 class VolumeCoverSource(zeit.cms.content.sources.XMLSource):
@@ -125,7 +137,7 @@ class VolumeCoverSource(zeit.cms.content.sources.XMLSource):
 VOLUME_COVER_SOURCE = VolumeCoverSource()
 
 
-class ProductNameMapper():
+class ProductNameMapper:
 
     def __init__(self):
         self.mapping = None
@@ -144,18 +156,3 @@ class ProductNameMapper():
             return default
 
 PRODUCT_MAPPING = ProductNameMapper()
-
-
-class IVolumeReference(zeit.cms.content.interfaces.IReference):
-
-    teaserText = zope.schema.Text(
-        title=_("Teaser text"),
-        required=False,
-        max_length=170)
-
-
-class ITocConnector(zope.interface.Interface):
-    """
-    Marker Interface for a the Connector to get the Tocdata from
-    /cms/wf-archiv/archiv
-    """

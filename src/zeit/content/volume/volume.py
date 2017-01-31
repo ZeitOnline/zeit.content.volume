@@ -52,10 +52,6 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             return
         self._product_id = value.id if value is not None else None
 
-    # @property
-    # def covers(self):
-    #     return zeit.content.volume.interfaces.IVolumeCovers(self)
-
     def fill_template(self, text):
         return self._fill_template(self, text)
 
