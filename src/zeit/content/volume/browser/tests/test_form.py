@@ -44,7 +44,8 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         self.open_add_form()
         b = self.browser
         b.getControl('Add').click()
-        b.getControl('Landscape').value = 'http://xml.zeit.de/imagegroup'
+        b.getControl('Landscape', index=0).value = 'http://xml.zeit.de/' \
+                                                   'imagegroup'
         b.getControl('Apply').click()
         b.getLink('Checkin').click()
         self.assertIn(
