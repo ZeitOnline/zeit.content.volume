@@ -98,8 +98,9 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         if uniqueId:
             return zeit.cms.interfaces.ICMSContent(uniqueId, None)
         # Fallback: try to find product for main product
-        # Save recursion :)
-        elif product_id is not self.product.id:
+        # Save recursion cause product id will be equal to self.product.id
+        # in the next call
+        elif product_id != self.product.id:
             return self.get_cover(cover_id, self.product.id)
 
     def set_cover(self, cover_id, product_id, imagegroup):
