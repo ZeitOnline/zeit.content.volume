@@ -9,6 +9,20 @@ import zope.interface.common.mapping
 import zope.schema
 
 
+class ProductSource(zeit.cms.content.sources.ProductSource):
+    """
+    Filtered XML source that only includes products with `volume="true"`.
+    Every product also has dependent Products which are defined in the
+    product.xml.
+    """
+
+    def getValues(self, context):
+        values = super(ProductSource, self).getValues(context)
+        return [value for value in values if value.volume]
+
+PRODUCT_SOURCE = ProductSource()
+
+
 class IVolume(zeit.cms.content.interfaces.IXMLContent):
 
     product = zope.schema.Choice(
@@ -97,20 +111,6 @@ class ITocConnector(zope.interface.Interface):
     Marker Interface for a the Connector to get the Tocdata from
     /cms/wf-archiv/archiv
     """
-
-
-class ProductSource(zeit.cms.content.sources.ProductSource):
-    """
-    Filtered XML source that only includes products with `volume="true"`.
-    Every product also has dependent Products which are defined in the
-    product.xml.
-    """
-
-    def getValues(self, context):
-        values = super(ProductSource, self).getValues(context)
-        return [value for value in values if value.volume]
-
-PRODUCT_SOURCE = ProductSource()
 
 
 class VolumeSource(zeit.cms.content.contentsource.CMSContentSource):
