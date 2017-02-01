@@ -90,7 +90,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         return zeit.cms.interfaces.ICMSContent(
             iter(result).next()['uniqueId'], None)
 
-    def get_cover(self, cover_id, product_id=None):
+    def get_cover(self, cover_id, product_id=None, use_fallback=True):
         path = '//covers/cover[@id="{}" and @product_id="{}"]' \
             .format(cover_id, product_id)
         node = self.xml.xpath(path)
@@ -100,7 +100,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         # Fallback: try to find product for main product
         # Save recursion cause product id will be equal to self.product.id
         # in the next call
-        elif product_id != self.product.id:
+        elif product_id != self.product.id and use_fallback:
             return self.get_cover(cover_id, self.product.id)
 
     def set_cover(self, cover_id, product_id, imagegroup):

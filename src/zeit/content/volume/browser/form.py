@@ -148,7 +148,8 @@ class Covers(grok.Adapter):
             return super(Covers, self).__getattr__(name)
         name = name.replace('cover_', '', 1)
         product, cover = name.split('_')
-        return self.context.get_cover(cover, product)
+        # We dont wont the fallback the fallback in the UI
+        return self.context.get_cover(cover, product, use_fallback=False)
 
     def __setattr__(self, name, value):
         if not name.startswith('cover_'):

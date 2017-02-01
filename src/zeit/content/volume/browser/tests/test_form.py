@@ -1,4 +1,6 @@
 from zeit.cms.testcontenttype.testcontenttype import ExampleContentType
+from zeit.content.image.testing import create_image_group
+import lxml.etree
 import zeit.cms.testing
 import zeit.content.text.python
 import zeit.content.volume.testing
@@ -38,7 +40,6 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
             """...Portrait...Landscape...iPad...""", b.contents)
 
     def test_saves_imagegroup_reference_via_dynamic_form_field(self):
-        from zeit.content.image.testing import create_image_group
         with zeit.cms.testing.site(self.getRootFolder()):
             self.repository['imagegroup'] = create_image_group()
         self.open_add_form()
@@ -51,6 +52,26 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         self.assertIn(
             '<span class="uniqueId">http://xml.zeit.de/imagegroup/</span>',
             b.contents)
+
+    def test_saves_imagegroup_for_dependent_project_in_xml(self):
+        with zeit.cms.testing.site(self.getRootFolder()):
+            self.repository['imagegroup'] = create_image_group()
+        self.open_add_form()
+        b = self.browser
+        b.getControl('Year').value = '2010'
+        b.getControl('Volume').value = '2'
+        b.getControl('Add').click()
+        b.getControl('Landscape', index=1).value = 'http://xml.zeit.de/' \
+                                                   'imagegroup'
+        b.getControl('Apply').click()
+        b.getLink('Checkin').click()
+        with zeit.cms.testing.site(self.getRootFolder()):
+            volume = zeit.cms.interfaces.ICMSContent(
+                'http://xml.zeit.de/2010/02/ausgabe')
+            cover_string = '<cover href="http://xml.zeit.de/imagegroup/" ' \
+                           'id="landscape" product_id="ZMLB"/>'
+            self.assertIn(cover_string, lxml.etree.tostring(volume.xml))
+
 
     def test_displays_warning_if_volume_with_same_name_already_exists(self):
         b = self.browser

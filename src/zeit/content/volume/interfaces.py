@@ -73,14 +73,18 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         ``http://xml.zeit.de/{year}/{name}/ausgabe``.
         """
 
-    # Maybe its nicer use the product, instead of product id?
-    def get_cover(cover_id, product_id):
+    # Maybe its nicer use the product (z.cms.contentsources:Product),
+    # instead of product id?
+    def get_cover(cover_id, product_id, use_fallback):
         """
-        Get a cover of product.
+        Get a cover of a product.
         For example volume.get_cover('printcover','ZEI') returns the
         printcover of DIE ZEIT of this specific volume.
-        If no product_id is given or if no Cover is found, the method looks
-        for a cover of the main_product.
+        If no product_id is given or if no Cover is found and use_fallback
+        is set, the method looks for a cover of the main_product.
+        :param cover_id: str cover ID set in volume-covers.xml
+        :param product_id: str product ID set in products.xml
+        :param product_id: bool specifies if a fallback should be used.
         :return: zeit.content.image.interfaces.IImageGroup or None
         """
 
