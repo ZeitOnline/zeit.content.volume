@@ -33,6 +33,7 @@ WD_LAYER = gocept.selenium.WebdriverLayer(
 WEBDRIVER_LAYER = gocept.selenium.WebdriverSeleneseLayer(
     name='WebdriverSeleneseLayer', bases=(WD_LAYER,))
 
+
 class FunctionalTestCase(zeit.cms.testing.FunctionalTestCase):
 
     layer = ZCML_LAYER

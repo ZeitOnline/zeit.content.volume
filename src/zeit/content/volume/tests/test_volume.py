@@ -31,7 +31,6 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
         lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
         self.volume.xml.covers.append(node)
 
-
     def test_set_cover_stores_uniqueId_in_XML_of_Volume(self):
         self.volume.set_cover('ipad', 'ZEI', self.repository['imagegroup'])
         self.assertEqual(
@@ -48,7 +47,8 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
             '<covers xmlns:py="http://codespeak.net/lxml/objectify/pytype"/>',
             lxml.etree.tostring(self.volume.xml.covers))
 
-    def test_get_cover_retrieves_ICMSContent_via_uniqueId_and_product_of_Volume(self):
+    def test_get_cover_gets_ICMSContent_via_uniqueId_and_product_of_Volume(
+            self):
         self.add_ipad_zeit_cover_to_volume()
         self.assertEqual(
             self.repository['imagegroup'], self.volume.get_cover('ipad',
@@ -68,7 +68,7 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
     #     self.add_ipad_zeit_cover_to_volume()
     #     self.assertEqual(None, self.volume.get_cover('ipad', 'TEST'))
 
-    def test_get_cover_retrieves_zei_cover_of_Volume_if_dependent_product_is_given(
+    def test_get_cover_gets_zei_cover_of_Volume_if_dependent_product_is_given(
             self):
         self.add_ipad_zeit_cover_to_volume()
         self.assertEqual(

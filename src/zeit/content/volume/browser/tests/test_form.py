@@ -1,12 +1,13 @@
+from zeit.cms.repository.folder import Folder
 from zeit.cms.testcontenttype.testcontenttype import ExampleContentType
 from zeit.content.image.testing import create_image_group
+from zeit.content.volume.volume import Volume
 import lxml.etree
 import zeit.cms.testing
 import zeit.content.text.python
 import zeit.content.volume.testing
 import zeit.cms.content.add
-from zeit.content.volume.volume import Volume
-from zeit.cms.repository.folder import Folder
+
 
 class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
 
@@ -73,7 +74,6 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
             cover_string = '<cover href="http://xml.zeit.de/imagegroup/" ' \
                            'id="landscape" product_id="ZMLB"/>'
             self.assertIn(cover_string, lxml.etree.tostring(volume.xml))
-
 
     def test_displays_warning_if_volume_with_same_name_already_exists(self):
         b = self.browser
@@ -155,4 +155,3 @@ class TestVolumeCoverWidget(zeit.cms.testing.SeleniumTestCase):
             s.select('id=choose-cover', 'label=Zeit Magazin')
             s.assertVisible('css=.fieldname-cover_ZMLB_portrait')
             s.assertNotVisible('css=.fieldname-cover_ZEI_portrait')
-
