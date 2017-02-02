@@ -148,7 +148,7 @@ class Covers(grok.Adapter):
             return super(Covers, self).__getattr__(name)
         name = name.replace('cover_', '', 1)
         product, cover = name.split('_')
-        # We dont wont the fallback the fallback in the UI
+        # We dont want the fallback in the UI
         return self.context.get_cover(cover, product, use_fallback=False)
 
     def __setattr__(self, name, value):

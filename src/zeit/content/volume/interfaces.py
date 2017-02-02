@@ -44,7 +44,7 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         max=53)
 
     teaserText = zope.schema.Text(
-        title=_("Teaser text"),
+        title=_("Volume text"),
         required=False,
         max_length=170)
 
@@ -105,7 +105,7 @@ class ICovers(zope.interface.Interface):
 class IVolumeReference(zeit.cms.content.interfaces.IReference):
 
     teaserText = zope.schema.Text(
-        title=_("Teaser text"),
+        title=_("Volume text"),
         required=False,
         max_length=170)
 
