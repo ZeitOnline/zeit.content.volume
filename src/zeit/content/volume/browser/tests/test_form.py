@@ -94,7 +94,7 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         b = self.browser
         self.open_add_form()
         b.getControl('Year').value = '2010'
-        b.getControl('Volume').value = '2'
+        b.getControl(name='form.volume').value = '2'
         b.getControl('Add').click()
         content = ExampleContentType()
         content.year = 2010
@@ -119,7 +119,7 @@ __return(cp)"""
         self.open_add_form()
         b = self.browser
         b.getControl('Year').value = '2010'
-        b.getControl('Volume').value = '2'
+        b.getControl(name='form.volume').value = '2'
         b.getControl('Add').click()
         with zeit.cms.testing.site(self.getRootFolder()):
             cp = zeit.cms.interfaces.ICMSContent(
