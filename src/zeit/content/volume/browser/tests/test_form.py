@@ -4,7 +4,9 @@ import lxml.etree
 import zeit.cms.testing
 import zeit.content.text.python
 import zeit.content.volume.testing
-
+import zeit.cms.content.add
+from zeit.content.volume.volume import Volume
+from zeit.cms.repository.folder import Folder
 
 class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
 
@@ -126,3 +128,31 @@ __return(cp)"""
                 zeit.content.cp.interfaces.ICenterPage.providedBy(cp))
             self.assertEqual(2010, cp.year)
             self.assertEqual(2, cp.volume)
+
+
+class TestVolumeCoverWidget(zeit.cms.testing.SeleniumTestCase):
+
+    layer = zeit.content.volume.testing.WEBDRIVER_LAYER
+
+    def setUp(self):
+        super(TestVolumeCoverWidget, self).setUp()
+        with zeit.cms.testing.site(self.getRootFolder()):
+            volume = Volume()
+            volume.year = 2015
+            volume.volume = 1
+            volume.product = zeit.cms.content.sources.Product(u'ZEI')
+            self.repository['2015'] = Folder()
+            self.repository['2015']['01'] = Folder()
+            self.repository['2015']['01']['ausgabe'] = volume
+
+    def test_only_one_cover_add_form_is_visible_at_the_time(self):
+            s = self.selenium
+            self.open('/repository/2015/01/ausgabe/@@checkout')
+            s.waitForElementPresent('css=#choose-cover')
+            s.assertCssCount('css=.column-right', 3)
+            s.assertNotVisible('css=.fieldname-cover_ZMLB_portrait')
+            s.assertVisible('css=.fieldname-cover_ZEI_portrait')
+            s.select('id=choose-cover', 'label=Zeit Magazin')
+            s.assertVisible('css=.fieldname-cover_ZMLB_portrait')
+            s.assertNotVisible('css=.fieldname-cover_ZEI_portrait')
+

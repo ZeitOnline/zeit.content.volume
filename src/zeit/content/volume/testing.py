@@ -4,6 +4,8 @@ import zeit.cms.testing
 import zeit.content.cp.testing
 import zeit.content.image.testing
 
+import gocept.httpserverlayer.wsgi
+import gocept.selenium
 
 product_config = """
 <product-config zeit.content.volume>
@@ -21,6 +23,15 @@ ZCML_LAYER = zeit.cms.testing.ZCMLLayer(
         zeit.content.image.testing.product_config +
         zeit.content.cp.testing.product_config))
 
+
+WSGI_LAYER = zeit.cms.testing.WSGILayer(
+    name='WSGILayer', bases=(ZCML_LAYER,))
+HTTP_LAYER = gocept.httpserverlayer.wsgi.Layer(
+    name='HTTPLayer', bases=(WSGI_LAYER,))
+WD_LAYER = gocept.selenium.WebdriverLayer(
+    name='WebdriverLayer', bases=(HTTP_LAYER,))
+WEBDRIVER_LAYER = gocept.selenium.WebdriverSeleneseLayer(
+    name='WebdriverSeleneseLayer', bases=(WD_LAYER,))
 
 class FunctionalTestCase(zeit.cms.testing.FunctionalTestCase):
 
