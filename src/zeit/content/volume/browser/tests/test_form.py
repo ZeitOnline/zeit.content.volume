@@ -21,13 +21,13 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         self.open_add_form()
         b = self.browser
         self.assertEqual('2008', b.getControl('Year').value)
-        self.assertEqual('26', b.getControl('Volume').value)
+        self.assertEqual('26', b.getControl(name='form.volume').value)
 
     def test_automatically_sets_location_using_year_and_volume(self):
         self.open_add_form()
         b = self.browser
         b.getControl('Year').value = '2010'
-        b.getControl('Volume').value = '2'
+        b.getControl(name='form.volume').value = '2'
         b.getControl('Add').click()
         b.getLink('Checkin').click()
         self.assertEqual(
@@ -61,7 +61,7 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         self.open_add_form()
         b = self.browser
         b.getControl('Year').value = '2010'
-        b.getControl('Volume').value = '2'
+        b.getControl(name='form.volume').value = '2'
         b.getControl('Add').click()
         b.getControl('Landscape', index=1).value = 'http://xml.zeit.de/' \
                                                    'imagegroup'
@@ -79,11 +79,11 @@ class VolumeBrowserTest(zeit.cms.testing.BrowserTestCase):
         b = self.browser
         self.open_add_form()
         b.getControl('Year').value = '2010'
-        b.getControl('Volume').value = '2'
+        b.getControl(name='form.volume').value = '2'
         b.getControl('Add').click()
         self.open_add_form()
         b.getControl('Year').value = '2010'
-        b.getControl('Volume').value = '2'
+        b.getControl(name='form.volume').value = '2'
         b.getControl('Add').click()
         self.assertEqual(
             'http://localhost/++skin++vivi/repository/'
