@@ -31,6 +31,11 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
         lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
         self.volume.xml.covers.append(node)
 
+    def test_set_cover_raises_value_error_for_invalid_values(self):
+        with self.assertRaises(ValueError):
+            self.volume.set_cover('ipad', 'TEST', self.repository[
+                'imagegroup'])
+
     def test_set_cover_stores_uniqueId_in_XML_of_Volume(self):
         self.volume.set_cover('ipad', 'ZEI', self.repository['imagegroup'])
         self.assertEqual(
@@ -80,8 +85,7 @@ class TestReference(zeit.content.volume.testing.FunctionalTestCase):
         volume = Volume()
         volume.year = 2015
         volume.volume = 1
-        self.repository['2015'] = Folder()
-        self.repository['2015']['01'] = Folder()
+        zeit.cms.content.add.find_or_create_folder('2015', '01')
         self.repository['2015']['01']['ausgabe'] = volume
 
     def test_content_with_missing_values_does_not_adapt_to_IVolume(self):
@@ -168,7 +172,6 @@ class TestOrder(zeit.content.volume.testing.FunctionalTestCase):
         super(TestOrder, self).setUp()
         self.create_volume(2015, 1)
         self.create_volume(2015, 2)
-
         self.solr = mock.Mock()
         self.zca.patch_utility(self.solr, zeit.solr.interfaces.ISolr)
 

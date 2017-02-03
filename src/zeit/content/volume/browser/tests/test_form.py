@@ -141,8 +141,7 @@ class TestVolumeCoverWidget(zeit.cms.testing.SeleniumTestCase):
             volume.year = 2015
             volume.volume = 1
             volume.product = zeit.cms.content.sources.Product(u'ZEI')
-            self.repository['2015'] = Folder()
-            self.repository['2015']['01'] = Folder()
+            zeit.cms.content.add.find_or_create_folder('2015', '01')
             self.repository['2015']['01']['ausgabe'] = volume
 
     def test_only_one_cover_add_form_is_visible_at_the_time(self):
