@@ -27,7 +27,7 @@ $(document).bind('fragment-ready', function(event) {
     choose_cover.on('change', function(event) {
         show_fieldsets(this.value);
     });
-    // Show only one product, when the site is loaded
+    // Show only one product, when the page is loaded
     choose_cover.trigger('change');
 });
 

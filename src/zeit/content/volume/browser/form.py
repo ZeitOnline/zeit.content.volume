@@ -51,6 +51,8 @@ class Base(object):
         super(Base, self).__init__(context, request)
         covers = zeit.content.volume.interfaces.VOLUME_COVER_SOURCE(
             self.context)
+        # In the Addform there is no volume object. Thus we have to wait for
+        #  it to be created.
         if getattr(self.context, 'product', None) is not None:
             for product in (
                     [self.context.product] +
@@ -61,7 +63,7 @@ class Base(object):
                         title=covers.title(name), required=False,
                         source=zeit.content.image.interfaces.imageGroupSource)
                     field.__name__ = 'cover_%s_%s' % (product.id, name)
-                    field.interface = zeit.content.volume.interfaces.ICovers
+                    field.interface = ICovers
                     self.form_fields += zope.formlib.form.FormFields(field)
                     fieldnames.append(field.__name__)
                 self.field_groups += (gocept.form.grouped.Fields(
@@ -138,10 +140,18 @@ class Display(Base, zeit.cms.browser.form.DisplayForm):
     title = _('View volume')
 
 
+class ICovers(zope.interface.Interface):
+    """
+    This interface is used to define the available covers via an Cover XML
+    source for all Products to store the chosen cover images as references
+    on the IVolume. It is only needed for the interaction with the formlib.
+    """
+
+
 class Covers(grok.Adapter):
 
     grok.context(zeit.content.volume.interfaces.IVolume)
-    grok.implements(zeit.content.volume.interfaces.ICovers)
+    grok.implements(ICovers)
 
     def __getattr__(self, name):
         if not name.startswith('cover_'):

@@ -60,9 +60,6 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
         self.assertEqual(
             self.repository['imagegroup'], self.volume.get_cover('ipad'))
 
-    # Well thats something worth discussing.
-    # Intuitively there shouldn't be a fallback for products which cant be
-    # part of this volume
     def test_get_cover_retrieves_none_for_if_product_is_not_in_volume(
             self):
         self.add_ipad_zeit_cover_to_volume()

@@ -52,20 +52,11 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         title=_('Date of digital publication'),
         required=False)
 
-    # covers = zope.interface.Attribute(
-    #     'Convenience method to adapt to IVolumeCovers')
-
     previous = zope.interface.Attribute(
         'The previous IVolume object (by date_digital_published) or None')
 
     next = zope.interface.Attribute(
         'The next IVolume object (by date_digital_published) or None')
-
-    def get_cover(name, product_id=None):
-        pass
-
-    def set_cover(name, product_id, value):
-        pass
 
     def fill_template(text):
         """Fill in a string template with the placeholders year=self.year
@@ -73,8 +64,6 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         ``http://xml.zeit.de/{year}/{name}/ausgabe``.
         """
 
-    # Maybe its nicer use the product (z.cms.contentsources:Product),
-    # instead of product id?
     def get_cover(cover_id, product_id, use_fallback):
         """
         Get a cover of a product.
@@ -92,14 +81,6 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         """
         Set an image as a cover of product.
         """
-
-
-class ICovers(zope.interface.Interface):
-    """
-    This interface is used to define the available covers via an Cover XML
-    source for all Products to store the chosen cover images as references
-    on the IVolume.
-    """
 
 
 class IVolumeReference(zeit.cms.content.interfaces.IReference):
