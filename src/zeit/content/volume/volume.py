@@ -89,7 +89,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
                              fl='uniqueId', rows=1)
         if not result:
             return None
-        # Since `sort` is passed in accordingly, and we exclude ourselves,Unbenannter Termin
+        # Since `sort` is passed in accordingly, and we exclude ourselves,
         # the first result (if any) is always the one we want.
         return zeit.cms.interfaces.ICMSContent(
             iter(result).next()['uniqueId'], None)
