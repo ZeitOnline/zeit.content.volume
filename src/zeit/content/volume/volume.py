@@ -184,9 +184,11 @@ def retrieve_volume_using_info_from_metadata(context):
     elif context.product.volume and context.product.location:
         unique_id = Volume._fill_template(context, context.product.location)
     else:
-        for product in zeit.content.volume.interfaces.PRODUCT_SOURCE(None):
-            if context.product in product.dependent_products:
-                unique_id = Volume._fill_template(context, product.location)
+        main_product = zeit.content.volume.interfaces.PRODUCT_SOURCE(
+            context).find(context.product.relates_to)
+        if main_product and main_product.volume:
+                unique_id = Volume._fill_template(context,
+                                                  main_product.location)
     return zeit.cms.interfaces.ICMSContent(unique_id, None)
 
 
