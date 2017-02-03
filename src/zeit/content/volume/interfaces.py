@@ -1,5 +1,4 @@
 # coding: utf8
-from collections import defaultdict
 from zeit.cms.i18n import MessageFactory as _
 import zc.sourcefactory.source
 import zeit.cms.content.interfaces
