@@ -69,6 +69,10 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
     def next(self):
         return self._find_in_order(self.date_digital_published, None, 'asc')
 
+    @property
+    def _all_products(self):
+        return [self.product] + self.product.dependent_products
+
     def _find_in_order(self, start, end, sort):
         if len(filter(None, [start, end])) != 1:
             return None
@@ -85,12 +89,15 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
                              fl='uniqueId', rows=1)
         if not result:
             return None
-        # Since `sort` is passed in accordingly, and we exclude ourselves,
+        # Since `sort` is passed in accordingly, and we exclude ourselves,Unbenannter Termin
         # the first result (if any) is always the one we want.
         return zeit.cms.interfaces.ICMSContent(
             iter(result).next()['uniqueId'], None)
 
     def get_cover(self, cover_id, product_id=None, use_fallback=True):
+        if product_id and product_id not in \
+                [prod.id for prod in self._all_products]:
+            return None
         path = '//covers/cover[@id="{}" and @product_id="{}"]' \
             .format(cover_id, product_id)
         node = self.xml.xpath(path)
@@ -118,15 +125,12 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
                                               href=imagegroup.uniqueId)
                 lxml.objectify.deannotate(node[0], cleanup_namespaces=True)
                 self.xml.covers.append(node)
-            # Is it neccassary or does the persistent module keep track of this
-            # stuff?
             super(Volume, self).__setattr__('_p_changed', True)
 
     def _is_valid_cover_id_and_product_id(self, cover_id, product_id):
         cover_ids = list(zeit.content.volume.interfaces.VOLUME_COVER_SOURCE(
             self))
-        product_ids = [self.product.id] + [val.id for val in
-                                           self.product.dependent_products]
+        product_ids = [prod.id for prod in self._all_products]
         return cover_id in cover_ids and product_id in product_ids
 
 

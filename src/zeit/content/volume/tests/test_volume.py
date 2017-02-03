@@ -63,10 +63,10 @@ class TestVolumeCovers(zeit.content.volume.testing.FunctionalTestCase):
     # Well thats something worth discussing.
     # Intuitively there shouldn't be a fallback for products which cant be
     # part of this volume
-    # def test_get_cover_retrieves_none_for_if_product_is_not_in_volume(
-    #         self):
-    #     self.add_ipad_zeit_cover_to_volume()
-    #     self.assertEqual(None, self.volume.get_cover('ipad', 'TEST'))
+    def test_get_cover_retrieves_none_for_if_product_is_not_in_volume(
+            self):
+        self.add_ipad_zeit_cover_to_volume()
+        self.assertEqual(None, self.volume.get_cover('ipad', 'TEST'))
 
     def test_get_cover_gets_zei_cover_of_Volume_if_dependent_product_is_given(
             self):
