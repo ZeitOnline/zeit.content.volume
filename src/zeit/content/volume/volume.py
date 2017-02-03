@@ -195,9 +195,17 @@ def retrieve_volume_using_info_from_metadata(context):
 @grok.adapter(zeit.content.volume.interfaces.IVolume)
 @grok.implementer(zeit.content.cp.interfaces.ICenterPage)
 def retrieve_corresponding_centerpage(context):
-    if context.product is None or context.product.centerpage is None:
+    unique_id = None
+    if context.product is None:
         return None
-    unique_id = context.fill_template(context.product.centerpage)
+    elif context.product.location:
+        unique_id = context.fill_template(context.product.centerpage)
+    else:
+        # Check if the main_product references the centerpage
+        main_product = zeit.content.volume.interfaces.PRODUCT_SOURCE(
+            context).find(context.product.relates_to)
+        if main_product and main_product.centerpage:
+            unique_id = context.fill_template(main_product.centerpage)
     cp = zeit.cms.interfaces.ICMSContent(unique_id, None)
     if not zeit.content.cp.interfaces.ICenterPage.providedBy(cp):
         return None
