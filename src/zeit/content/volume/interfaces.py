@@ -122,7 +122,7 @@ class VolumeCoverSource(zeit.cms.content.sources.XMLSource):
 VOLUME_COVER_SOURCE = VolumeCoverSource()
 
 
-class ProductNameMapper:
+class ProductNameMapper(object):
 
     def __init__(self):
         self.mapping = None

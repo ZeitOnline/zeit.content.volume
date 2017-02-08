@@ -52,7 +52,7 @@ class Base(object):
         covers = zeit.content.volume.interfaces.VOLUME_COVER_SOURCE(
             self.context)
         # In the Addform there is no volume object. Thus we have to wait for
-        #  it to be created.
+        # it to be created.
         if getattr(self.context, 'product', None) is not None:
             for product in (
                     [self.context.product] +

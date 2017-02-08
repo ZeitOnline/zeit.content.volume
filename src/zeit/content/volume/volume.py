@@ -1,9 +1,7 @@
 from zeit.cms.i18n import MessageFactory as _
-import UserDict
 import grokcore.component as grok
 import lxml.objectify
 import zeit.cms.content.dav
-import zeit.cms.content.property
 import zeit.cms.content.xmlsupport
 import zeit.cms.interfaces
 import zeit.cms.type
@@ -12,7 +10,6 @@ import zeit.content.volume.interfaces
 import zeit.workflow.interfaces
 import zope.interface
 import zope.schema
-import zope.security.proxy
 
 
 class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
@@ -105,14 +102,12 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         if uniqueId:
             return zeit.cms.interfaces.ICMSContent(uniqueId, None)
         # Fallback: try to find product for main product
-        # Save recursion cause product id will be equal to self.product.id
-        # in the next call
+        # Stop recursion (product id will be equal to self.product.id
+        # in the next call)
         elif product_id != self.product.id and use_fallback:
             return self.get_cover(cover_id, self.product.id)
 
     def set_cover(self, cover_id, product_id, imagegroup):
-        # Check if this cover is defined in VolumeCoverSource and
-        # product is part of this volume and set it in xml
         if not self._is_valid_cover_id_and_product_id(cover_id, product_id):
             raise ValueError("Cover id {} or product id {} are not "
                              "valid.".format(cover_id, product_id))
@@ -147,7 +142,6 @@ class VolumeType(zeit.cms.type.XMLContentTypeDeclaration):
 @grok.adapter(zeit.cms.content.interfaces.ICommonMetadata)
 @grok.implementer(zeit.content.volume.interfaces.IVolume)
 def retrieve_volume_using_info_from_metadata(context):
-    unique_id = None
     if (context.year is None or context.volume is None or
             context.product is None):
         return None
