@@ -165,6 +165,17 @@ class TestVolume(zeit.content.volume.testing.FunctionalTestCase):
         cp = zeit.content.cp.interfaces.ICenterPage(volume, None)
         self.assertEqual(None, cp)
 
+    def test_looks_up_centerpage_for_depent_product_content(self):
+        content = ExampleContentType()
+        content.product = zeit.cms.content.sources.Product(u'ZMLB')
+        self.repository['2015']['01']['index'] = content
+        volume = zeit.cms.interfaces.ICMSContent(
+            'http://xml.zeit.de/2015/01/ausgabe')
+        self.repository['2015']['01']['index'] = zeit.content.cp.centerpage \
+            .CenterPage()
+        cp = zeit.content.cp.interfaces.ICenterPage(volume)
+        self.assertEqual('http://xml.zeit.de/2015/01/index', cp.uniqueId)
+
 
 class TestOrder(zeit.content.volume.testing.FunctionalTestCase):
 

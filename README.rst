@@ -31,6 +31,7 @@ Hauptprodukt vorhanden, wird das Cover des Hauptprodukts zurückgegeben.
 Sucht man beispielsweise nach dem Printcover des Zeit Magazins und dies
 kann nicht gefunden werden, dann wird das printcover von DIE ZEIT geliefert.
 
+
 Cover-Bilder
 ============
 
