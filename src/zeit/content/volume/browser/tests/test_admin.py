@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+from zeit.content.portraitbox.portraitbox import Portraitbox
+from zeit.content.infobox.infobox import Infobox
+import zeit.content.portraitbox.interfaces
+import zeit.content.infobox.interfaces
 from zeit.cms.testcontenttype.testcontenttype import ExampleContentType
 from zeit.cms.workflow.interfaces import IPublishInfo
 from zeit.content.volume.volume import Volume
@@ -15,6 +18,8 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
     login_as = 'zmgr:mgrpw'
 
     def setUp(self):
+        self.solr = mock.Mock()
+        self.zca.patch_utility(self.solr, zeit.solr.interfaces.ISolr)
         super(VolumeAdminBrowserTest, self).setUp()
         volume = Volume()
         volume.year = 2015
@@ -31,6 +36,32 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                 self.repository['testcontent'] = content
                 IPublishInfo(self.repository['testcontent']).urgent = True
 
+    def create_article_with_references(self):
+        from zeit.content.article.edit.body import EditableBody
+        from zeit.content.article.article import Article
+        from zeit.content.article.interfaces import IArticle
+        import zeit.cms.browser.form
+        with zeit.cms.testing.site(self.getRootFolder()):
+            with zeit.cms.testing.interaction():
+                article = Article()
+                zeit.cms.browser.form.apply_default_values(article, IArticle)
+                article.year = 2017
+                article.title = u'title'
+                article.ressort = u'Deutschland'
+                portraitbox = Portraitbox()
+                self.repository['portraitbox'] = portraitbox
+                body = EditableBody(article, article.xml.body)
+                portraitbox_reference = body.create_item('portraitbox')
+                portraitbox_reference._validate = mock.Mock()
+                infobox = Infobox()
+                self.repository['infobox'] = infobox
+                infobox_reference = body.create_item('infobox')
+                infobox_reference._validate = mock.Mock()
+                infobox_reference.references = infobox
+                self.repository['article_with_ref'] = article
+                IPublishInfo(article).urgent = True
+                return self.repository['article_with_ref']
+
     def test_view_has_action_buttons(self):
         # Cause the VolumeAdminForm has additional actions
         # check if base class and subclass actions are used.
@@ -44,9 +75,7 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
         b = self.browser
         b.open('http://localhost/++skin++vivi/repository/'
                '2015/01/ausgabe/@@admin.html')
-        solr = mock.Mock()
-        self.zca.patch_utility(solr, zeit.solr.interfaces.ISolr)
-        solr.search.return_value = pysolr.Results(
+        self.solr.search.return_value = pysolr.Results(
             [{'uniqueId': 'http://xml.zeit.de/testcontent'}], 1)
         b.getControl('Publish content of this volume').click()
         with zeit.cms.testing.site(self.getRootFolder()):
@@ -59,3 +88,23 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                     script.assert_called_with(['work/testcontent'])
                     self.assertTrue(
                         IPublishInfo(self.repository['testcontent']).published)
+
+    # TODO Refactor these tests
+    # Why use Testcontent an the other time use an article?
+    def test_publishes_referenced_boxes_of_articles(self):
+        article = self.create_article_with_references()
+        b = self.browser
+        b.open('http://localhost/++skin++vivi/repository/'
+               '2015/01/ausgabe/@@admin.html')
+        self.solr.search.return_value = pysolr.Results(
+            [{'uniqueId': 'http://xml.zeit.de/artice_with_ref'}], 1)
+        b.getControl('Publish content of this volume').click()
+        with zeit.cms.testing.site(self.getRootFolder()):
+            with zeit.cms.testing.interaction():
+                zeit.workflow.testing.run_publish(
+                    zeit.cms.workflow.interfaces.PRIORITY_LOW)
+                self.assertTrue(zeit.cms.workflow.interfaces.IPublishInfo(
+                    self.repository['portraitbox']).published)
+                self.assertTrue(zeit.cms.workflow.interfaces.IPublishInfo(
+                    self.repository['infobox']).published)
+
