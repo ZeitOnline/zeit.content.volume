@@ -51,11 +51,12 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                 portraitbox = Portraitbox()
                 self.repository['portraitbox'] = portraitbox
                 body = EditableBody(article, article.xml.body)
-                portraitbox_reference = body.create_item('portraitbox')
+                portraitbox_reference = body.create_item('portraitbox', 1)
                 portraitbox_reference._validate = mock.Mock()
+                portraitbox_reference.references = portraitbox
                 infobox = Infobox()
                 self.repository['infobox'] = infobox
-                infobox_reference = body.create_item('infobox')
+                infobox_reference = body.create_item('infobox', 2)
                 infobox_reference._validate = mock.Mock()
                 infobox_reference.references = infobox
                 self.repository['article_with_ref'] = article
@@ -97,7 +98,7 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
         b.open('http://localhost/++skin++vivi/repository/'
                '2015/01/ausgabe/@@admin.html')
         self.solr.search.return_value = pysolr.Results(
-            [{'uniqueId': 'http://xml.zeit.de/artice_with_ref'}], 1)
+            [{'uniqueId': article.uniqueId}], 1)
         b.getControl('Publish content of this volume').click()
         with zeit.cms.testing.site(self.getRootFolder()):
             with zeit.cms.testing.interaction():

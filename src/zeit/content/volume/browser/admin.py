@@ -59,7 +59,7 @@ class VolumeAdminForm(zeit.cms.admin.browser.admin.EditFormCI):
             content
             for content in zeit.cms.interfaces.ICMSContentIterable(
                 content)
-            if self.needs_publishing(content)
+            if self._needs_publishing(content)
             ]
         with_dependencies.append(content)
         return with_dependencies
