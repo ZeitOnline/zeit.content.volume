@@ -46,19 +46,19 @@ class VolumeAdminForm(zeit.cms.admin.browser.admin.EditFormCI):
             additional_query_contstraints=additional_constraints)
         # Flatten the list of lists and remove duplicates
         all_content_to_publish = list(set(itertools.chain.from_iterable(
-                [self._with_dependencies(article) for article in
-                    articles_to_publish])))
+                [self._with_references(article) for article in
+                 articles_to_publish])))
         IPublish(self.context).publish_multiple(all_content_to_publish)
 
-    def _with_dependencies(self, content):
+    def _with_references(self, content):
         """
-        :param content: CMSContent which dependencies are looked up.
-        :return: [dep1, dep2,..., content]
+        :param content: CMSContent
+        :return: [content_ref1, content_ref2,..., content]
         """
         with_dependencies = [
             content
             for content in zeit.cms.interfaces.ICMSContentIterable(
-                content)
+                content, [])
             if self._needs_publishing(content)
             ]
         with_dependencies.append(content)
