@@ -57,6 +57,15 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                 infobox_reference = body.create_item('infobox', 2)
                 infobox_reference._validate = mock.Mock()
                 infobox_reference.references = infobox
+                # Tbh I have no idea why this image is present,
+                # i just use it
+                self.repository['image'] = zeit.cms.interfaces.ICMSContent(
+                    'http://xml.zeit.de/2006/DSC00109_2.JPG')
+                image_reference = body.create_item('image', 3)
+                image_reference._validate = mock.Mock()
+                image_reference.references.create(
+                    zeit.cms.interfaces.ICMSContent(
+                    'http://xml.zeit.de/2006/DSC00109_2.JPG'))
                 self.repository['article_with_ref'] = article
                 IPublishInfo(article).urgent = True
                 return self.repository['article_with_ref']
@@ -99,3 +108,11 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
             self.repository['portraitbox']).published)
         self.assertTrue(zeit.cms.workflow.interfaces.IPublishInfo(
             self.repository['infobox']).published)
+
+    def test_referenced_image_is_not_published(self):
+        article = self.create_article_with_references()
+        self.solr.search.return_value = pysolr.Results(
+            [{'uniqueId': article.uniqueId}], 1)
+        self.publish_content()
+        self.assertFalse(zeit.cms.workflow.interfaces.IPublishInfo(
+            self.repository['image']).published)
