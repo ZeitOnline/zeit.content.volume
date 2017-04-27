@@ -119,8 +119,9 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             product_id = self.product.id
         if product_id and product_id not in \
                 [prod.id for prod in self._all_products]:
-            raise ValueError('%s is not a valid product id for %s' % (
+            log.warning('%s is not a valid product id for %s' % (
                 product_id, self))
+            return None
         path = '//covers/cover[@id="{}" and @product_id="{}"]' \
             .format(cover_id, product_id)
         node = self.xml.xpath(path)
@@ -130,6 +131,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         if use_fallback:
             # Fall back to the main product (which must be self.product,
             # since we respond only to ids out of self._all_products)
+            # Recursive call of this function with the main product ID
             return self.get_cover(
                 cover_id, self.product.id, use_fallback=False)
 
