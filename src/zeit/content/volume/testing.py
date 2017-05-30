@@ -18,20 +18,10 @@ product_config = """
 </product-config>
 """.format(here=pkg_resources.resource_filename(__name__, '.'))
 
-# Config duplication, because z.c.article.testing can't be imported due to
-# cyclic imports
-article_product_config = """
-<product-config zeit.content.article>
-    legacy-display-mode-source file://{here}/tests/fixtures/legacy-display-modes.xml
-    legacy-variant-name-source file://{here}/tests/fixtures/legacy-variant-names.xml
-</product-config>
-""".format(here=pkg_resources.resource_filename(__name__, '.'))
-
 
 ZCML_LAYER = zeit.cms.testing.ZCMLLayer(
     'ftesting.zcml', product_config=(
         product_config +
-        article_product_config +
         zeit.cms.testing.cms_product_config +
         zeit.content.image.testing.product_config +
         zeit.content.cp.testing.product_config +

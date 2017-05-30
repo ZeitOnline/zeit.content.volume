@@ -99,6 +99,11 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         :return: None
         """
 
+    def references_for_publishing(volume):
+        """
+        :return:
+        """
+
 
 class IVolumeReference(zeit.cms.content.interfaces.IReference):
 
