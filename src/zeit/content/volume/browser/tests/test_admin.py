@@ -65,7 +65,7 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                 image_reference._validate = mock.Mock()
                 image_reference.references.create(
                     zeit.cms.interfaces.ICMSContent(
-                    'http://xml.zeit.de/2006/DSC00109_2.JPG'))
+                        'http://xml.zeit.de/2006/DSC00109_2.JPG'))
                 self.repository['article_with_ref'] = article
                 IPublishInfo(article).urgent = True
                 return self.repository['article_with_ref']

@@ -49,6 +49,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
     assets_to_publish = [zeit.content.portraitbox.interfaces.IPortraitbox,
                          zeit.content.infobox.interfaces.IInfobox
                          ]
+
     @property
     def product(self):
         source = zeit.content.volume.interfaces.IVolume['product'].source(self)

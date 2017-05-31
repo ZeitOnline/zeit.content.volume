@@ -14,7 +14,6 @@ class VolumeAdminForm(zeit.cms.admin.browser.admin.EditFormCI):
 
     extra_actions = zope.formlib.form.Actions()
 
-
     @property
     def actions(self):
         return list(super(VolumeAdminForm, self).actions) + \
