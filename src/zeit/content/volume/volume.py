@@ -11,6 +11,7 @@ import zeit.content.cp.interfaces
 import zeit.content.volume.interfaces
 import zeit.content.portraitbox.interfaces
 import zeit.content.infobox.interfaces
+import zeit.edit.interfaces
 import zeit.solr.query
 import zeit.workflow.interfaces
 import zope.interface
@@ -234,9 +235,12 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         :param content: CMSContent
         :return: [content_ref1, content_ref2,..., content]
         """
+        # XXX Using zeit.cms.relation.IReferences would make sense here as
+        # well but due to some license issues with images referenced by
+        # articles we have to be careful what we want to publish
         with_dependencies = [
             content
-            for content in zeit.cms.interfaces.ICMSContentIterable(
+            for content in zeit.edit.interfaces.IElementReferences(
                 content, [])
             if self._needs_publishing(content)
             ]
