@@ -99,9 +99,10 @@ class IVolume(zeit.cms.content.interfaces.IXMLContent):
         :return: None
         """
 
-    def references_for_publishing(volume):
+    def references_for_publishing():
         """
-        :return:
+        Looks up all referenced content of relevant content of this volume.
+        :return: [ICMSContent, ...]
         """
 
 
