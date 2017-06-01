@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from zeit.cms.i18n import MessageFactory as _
 from zeit.cms.workflow.interfaces import IPublish
 import zeit.cms.admin.browser.admin
@@ -16,8 +15,9 @@ class VolumeAdminForm(zeit.cms.admin.browser.admin.EditFormCI):
 
     @property
     def actions(self):
-        return list(super(VolumeAdminForm, self).actions) + \
-               list(self.extra_actions)
+        return (
+            list(super(VolumeAdminForm, self).actions) +
+            list(self.extra_actions))
 
     @zope.formlib.form.action(_("Publish content of this volume"),
                               extra_actions)
@@ -25,5 +25,6 @@ class VolumeAdminForm(zeit.cms.admin.browser.admin.EditFormCI):
         """
         Publish articles marked as urgent and their boxes.
         """
-        all_content_to_publish = self.context.references_for_publishing()
+        all_content_to_publish = \
+            self.context.content_with_references_for_publishing()
         IPublish(self.context).publish_multiple(all_content_to_publish)

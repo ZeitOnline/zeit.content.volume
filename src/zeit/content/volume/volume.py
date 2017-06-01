@@ -1,6 +1,5 @@
 import itertools
 from zeit.cms.i18n import MessageFactory as _
-from zeit.cms.workflow.interfaces import IPublish
 import grokcore.component as grok
 import lxml.objectify
 import zeit.cms.content.dav
@@ -81,6 +80,10 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
     def teaserText(self, value):
         self._teaserText = value
 
+    @property
+    def teaserSupertitle(self):  # For display in CP-editor
+        return self.fill_template('Ausgabe {name}/{year}')
+
     def fill_template(self, text):
         return self._fill_template(self, text)
 
@@ -128,8 +131,9 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             product_id = self.product.id
         if product_id and product_id not in \
                 [prod.id for prod in self._all_products]:
-            raise ValueError('%s is not a valid product id for %s' % (
+            log.warning('%s is not a valid product id for %s' % (
                 product_id, self))
+            return None
         path = '//covers/cover[@id="{}" and @product_id="{}"]' \
             .format(cover_id, product_id)
         node = self.xml.xpath(path)
@@ -139,6 +143,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         if use_fallback:
             # Fall back to the main product (which must be self.product,
             # since we respond only to ids out of self._all_products)
+            # Recursive call of this function with the main product ID
             return self.get_cover(
                 cover_id, self.product.id, use_fallback=False)
 
@@ -211,9 +216,9 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             except:
                 log.error("Couldn't change access for {}. Skipping "
                           "it.".format(cnt.uniqueId))
-        IPublish(self).publish_multiple(cnts)
+        return cnts
 
-    def references_for_publishing(self):
+    def content_with_references_for_publishing(self):
         Q = zeit.solr.query
         additional_constraints = [
             Q.field('published', 'not-published'),
@@ -230,7 +235,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
                 [self._with_references(article) for article in
                  articles_to_publish])))
 
-    def _with_references(self, content):
+    def _with_references(self, article):
         """
         :param content: CMSContent
         :return: [content_ref1, content_ref2,..., content]
@@ -241,7 +246,7 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
         with_dependencies = [
             content
             for content in zeit.edit.interfaces.IElementReferences(
-                content, [])
+                article, [])
             if self._needs_publishing(content)
             ]
         with_dependencies.append(content)

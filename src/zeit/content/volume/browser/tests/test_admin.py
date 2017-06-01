@@ -61,6 +61,8 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                 # i just use it
                 self.repository['image'] = zeit.cms.interfaces.ICMSContent(
                     'http://xml.zeit.de/2006/DSC00109_2.JPG')
+                # This is not a correct image reference, i tricked myself
+                # here into believing my code works
                 image_reference = body.create_item('image', 3)
                 image_reference._validate = mock.Mock()
                 image_reference.references.create(
