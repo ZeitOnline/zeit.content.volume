@@ -232,24 +232,22 @@ class Volume(zeit.cms.content.xmlsupport.XMLContentBase):
             additional_query_contstraints=additional_constraints)
         # Flatten the list of lists and remove duplicates
         return list(set(itertools.chain.from_iterable(
-                [self._with_references(article) for article in
-                 articles_to_publish])))
+            [self._with_references(article) for article in
+             articles_to_publish])))
 
     def _with_references(self, article):
         """
         :param content: CMSContent
-        :return: [content_ref1, content_ref2,..., content]
+        :return: [referenced_content1, ..., content]
         """
         # XXX Using zeit.cms.relation.IReferences would make sense here as
         # well but due to some license issues with images referenced by
         # articles we have to be careful what we want to publish
         with_dependencies = [
-            content
-            for content in zeit.edit.interfaces.IElementReferences(
-                article, [])
-            if self._needs_publishing(content)
-            ]
-        with_dependencies.append(content)
+            content for content in zeit.edit.interfaces.IElementReferences(
+                article, []) if self._needs_publishing(content)
+        ]
+        with_dependencies.append(article)
         return with_dependencies
 
     def _needs_publishing(self, content):
