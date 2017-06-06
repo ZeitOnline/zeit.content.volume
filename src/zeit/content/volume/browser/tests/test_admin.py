@@ -57,17 +57,12 @@ class VolumeAdminBrowserTest(zeit.cms.testing.BrowserTestCase):
                 infobox_reference = body.create_item('infobox', 2)
                 infobox_reference._validate = mock.Mock()
                 infobox_reference.references = infobox
-                # Tbh I have no idea why this image is present,
-                # i just use it
                 self.repository['image'] = zeit.cms.interfaces.ICMSContent(
                     'http://xml.zeit.de/2006/DSC00109_2.JPG')
-                # This is not a correct image reference, i tricked myself
-                # here into believing my code works
                 image_reference = body.create_item('image', 3)
+                image_reference.references = image_reference.references.create(
+                    self.repository['image'])
                 image_reference._validate = mock.Mock()
-                image_reference.references.create(
-                    zeit.cms.interfaces.ICMSContent(
-                        'http://xml.zeit.de/2006/DSC00109_2.JPG'))
                 self.repository['article_with_ref'] = article
                 IPublishInfo(article).urgent = True
                 return self.repository['article_with_ref']
